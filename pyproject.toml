@@ -1,9 +1,21 @@
 [project]
 name = "ds-rpc-01"
 version = "0.1.0"
-description = "Starter project for the RPC-01: Internal Chatbot with Role Based Access Control"
+description = "RAG-based chatbot with role-based access control"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10"x
+
 dependencies = [
-    "fastapi[standard]>=0.115.12",
+    "fastapi[all]>=0.100.0",
+    "uvicorn>=0.22.0",
+    "python-jose[cryptography]>=3.3.0",
+    "python-dotenv>=1.0.0",
+    "passlib[bcrypt]>=1.7.4"
 ]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["app"]
