@@ -1,46 +1,43 @@
-from typing import Dict
-
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordRequestForm
+from app.services.auth_service import authenticate_user, create_access_token, decode_access_token
+from app.schemas.token import Token
 
 app = FastAPI()
-security = HTTPBasic()
 
-# Dummy user database
-users_db: Dict[str, Dict[str, str]] = {
-    "Tony": {"password": "password123", "role": "engineering"},
-    "Bruce": {"password": "securepass", "role": "marketing"},
-    "Sam": {"password": "financepass", "role": "finance"},
-    "Peter": {"password": "pete123", "role": "engineering"},
-    "Sid": {"password": "sidpass123", "role": "marketing"},
-    "Natasha": {"passwoed": "hrpass123", "role": "hr"}
-}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], allow_credentials=True,
+    allow_methods=["*"], allow_headers=["*"]
+)
 
-
-# Authentication dependency
-def authenticate(credentials: HTTPBasicCredentials = Depends(security)):
-    username = credentials.username
-    password = credentials.password
-    user = users_db.get(username)
-    if not user or user["password"] != password:
+@app.post("/login", response_model=Token)
+def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"username": username, "role": user["role"]}
+    
+    token = create_access_token({
+        "sub": user["username"],
+        "role": user["role"]
+    })
+    return {"access_token": token, "token_type": "bearer"}
 
+def get_current_user(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid token")
+    
+    token = auth_header.split(" ")[1]
+    user_data = decode_access_token(token)
+    if not user_data:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    return user_data
 
-# Login endpoint
-@app.get("/login")
-def login(user=Depends(authenticate)):
-    return {"message": f"Welcome {user['username']}!", "role": user["role"]}
-
-
-# Protected test endpoint
-@app.get("/test")
-def test(user=Depends(authenticate)):
-    return {"message": f"Hello {user['username']}! You can now chat.", "role": user["role"]}
-
-
-# Protected chat endpoint
 @app.post("/chat")
-def query(user=Depends(authenticate), message: str = "Hello"):
-    return "Implement this endpoint."
+def chat(query: str, user=Depends(get_current_user)):
+    return {
+        "response": f"Hi {user['username']}, you asked: '{query}', and your role is: {user['role']}"
+    }
