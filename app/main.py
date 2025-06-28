@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from app.services.auth_service import authenticate_user, create_access_token, decode_access_token
 from app.schemas.token import Token
+from fastapi import Request
+from app.services.retriever_service import retrieve_similar_docs
 
 app = FastAPI()
 
@@ -38,6 +40,16 @@ def get_current_user(request: Request):
 
 @app.post("/chat")
 def chat(query: str, user=Depends(get_current_user)):
+    if user["role"] not in ["engineering", "hr", "finance", "marketing"]:
+        raise HTTPException(status_code=403, detail="Access denied for your role.")
+    
+    # Dummy role-based logic for now
     return {
-        "response": f"Hi {user['username']}, you asked: '{query}', and your role is: {user['role']}"
+        "response": f"Hi {user['username']}, you asked: '{query}' (role: {user['role']})"
     }
+
+
+@app.get("/test-retrieve")
+def test_retrieve(query: str, request: Request):
+    user = get_current_user(request)
+    return retrieve_similar_docs(query, user["role"])
