@@ -3,15 +3,18 @@ name = "ds-rpc-01"
 version = "0.1.0"
 description = "RAG-based chatbot with role-based access control"
 readme = "README.md"
-requires-python = ">=3.10"x
+requires-python = ">=3.10"
 
 dependencies = [
-    "fastapi[all]>=0.100.0",
+    "fastapi[standard]>=0.115.12",
     "uvicorn>=0.22.0",
     "python-jose[cryptography]>=3.3.0",
     "python-dotenv>=1.0.0",
-    "passlib[bcrypt]>=1.7.4"
+    "sentence-transformers>=2.2.2",
+    "faiss-cpu>=1.7.4",
+    "pandas>=2.2.2"
 ]
+
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
