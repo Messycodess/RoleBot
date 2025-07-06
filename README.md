@@ -7,25 +7,47 @@ This is a complete implementation of a **RAG-based (Retrieval-Augmented Generati
 ---
 
 ## 🚀 Features
+This chatbot solves FinSolve's data access problem using:
+- 🧠 **RAG (Retrieval-Augmented Generation)** via LLaMA 3 (Ollama)
+- 🔐 **Role-Based Filtering** at the vector search level
+- ⚡ **FastAPI + Streamlit** for interactive chat and login
+- 🧾 **Documents** stored per department with metadata
+---
 
-### ✅ 1. Role-Based Access Control (RBAC)
-- Secure login using **JWT authentication**
-- Role-aware responses for HR, Finance, Marketing, Engineering, Executives, and Employees
-- Each role sees tailored answers from internal documents
+## 👥 Role-Based Access Control (RBAC)
 
-### 🧠 2. Retrieval-Augmented Generation (RAG)
-- Documents stored in `.txt` format per department
-- Uses **FAISS** for vector similarity search
-- Embeddings generated using OpenAI's `text-embedding-3-small` model
+| Role               | Permissions                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| C-Level Executives | Full unrestricted access to all documents                                   |
+| Finance Team       | Financial reports, expenses, reimbursements                                 |
+| Marketing Team     | Campaign performance, customer insights, sales data                         |
+| HR Team            | Employee handbook, attendance, leave, payroll                               |
+| Engineering Dept.  | System architecture, deployment, CI/CD                                      |
+| Employees          | General information (FAQs, company policies, events)                        |
 
-### 🌐 3. Streamlit Frontend
-- Clean, responsive UI for chat interaction
-- Easy to use for non-technical users
-- Real-time LLM answers streamed to the user
+## 🛠 Tech Stack
 
-### ⚡ 4. LLM Integration
-- Supports **OpenAI GPT-3.5** or **Groq (Mixtral/LLama3)** for blazing fast responses
-- Modular logic to swap models or providers easily
+| Layer         | Tool/Library             |
+|---------------|--------------------------|
+| Frontend      | Streamlit                |
+| Backend       | FastAPI                  |
+| Embeddings    | SentenceTransformers     |
+| Vector DB     | ChromaDB                 |
+| LLM           | LLaMA 3 (via Groq)     |
+| Doc Format    | Markdown (.md)           |
+
+---
+
+## 🧪 Sample Users & Roles
+
+| Username | Password     | Role              |
+|----------|--------------|-------------------|
+| Alice    | ceopass      | c-levelexecutives |
+| Bob      | employeepass | employee          |
+| Tony     | password123  | engineering       |
+| Bruce    | securepass   | marketing         |
+| Sam      | financepass  | finance           |
+| Natasha  | hrpass123    | hr                |
 
 ---
 
